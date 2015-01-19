@@ -1,0 +1,31 @@
+{
+	"debug": true,
+	"TLS": true,
+	"selfSigned": true,
+	"server": "goodgrammarwhat.com:6667",
+	"nick": "anbot",
+	"channel": "#theParty",
+	"timeAlerts": [
+		{
+			"msg": "Wake up hackers!",
+			"hour": 12,
+			"minute": 30
+		},
+		{
+			"msg": "Cake time :)",
+			"hour": 15,
+			"minute": 15
+		},
+		{
+			"msg": "Sleep time hackers ;|",
+			"hour": 1,
+			"minute": 30
+		}
+	],
+	"directInteractions": [
+		{
+			"Exp": "\\s*hi+\\s*",
+			"Resp": "Hello"
+		}
+	]
+}
