@@ -110,7 +110,7 @@ func TimeAlert(irccon *irc.Connection, msg string, hour, minute int) {
 	for true {
 		if time.Now().Hour() == hour && time.Now().Minute() == minute {
 			irccon.Privmsg(config.Channel, msg)
-			time.Sleep(12 * time.Hour )
+			time.Sleep(24 * time.Hour )
 		} else {
 			time.Sleep( 1 * time.Minute )
 		}
