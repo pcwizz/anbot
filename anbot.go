@@ -126,10 +126,14 @@ func TimeAlert(irccon *irc.Connection, msg string, hour, minute int) {
 			irccon.Privmsg(config.Channel, msg)
 			time.Sleep(24 * time.Hour )
 		} else {
-			time.Sleep( 1 * time.Minute )
+			var hours, minutes int
+			hours = (hour - time.Now().Hour()) % 24
+			minutes = (minutes - time.Now().Minute()) % 60
+			time.Sleep( (time.Duration(minutes) * time.Minute) + (time.Duration(hours) * time.Hour) )
 		}
 	}
 }
+
 
 func DirectInteraction (irccon *irc.Connection, e *irc.Event){
 	parts := strings.SplitAfterN(e.Arguments[1], ":", 2)
