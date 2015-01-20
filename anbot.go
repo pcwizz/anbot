@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"time"
 	"log"
+	"fmt"
 	"encoding/json"
 	"io/ioutil"
 	"strings"
@@ -30,12 +31,15 @@ const license = "This program is free software: you can redistribute it and/or m
 const licenceexp = `\s*licen[c|s]e\s*`
 
 func main() {
+	loadConfig()
 	CompiledDirectInteractions = make(map[string]*regexp.Regexp)
 	CompiledInteractions = make(map[string]*regexp.Regexp)
 	directexp := regexp.MustCompile(config.Nick + ":.*")
+	if config.Debug == true {
+		fmt.Printf("\nNickexp:\t%s\n",directexp)
+	}
 	//built in interactions
 	CompiledDirectInteractions[licenceexp] = regexp.MustCompile(licenceexp)
-	loadConfig()
 	CompileInteractions()
 	irccon := irc.IRC(config.Nick, config.Nick)
 	irccon.Debug = config.Debug
