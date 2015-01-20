@@ -40,6 +40,8 @@ func main() {
 	}
 	//built in interactions
 	CompiledDirectInteractions[licenceexp] = regexp.MustCompile(licenceexp)
+	iplayerexp := regexp.MustCompile(`bbc\.co.uk/iplayer/episode/\w+`)
+	youtubeexp := regexp.MustCompile(`((youtube\..*/watch\?v=)|(youtu\.be/))(\w|-)+`)
 	CompileInteractions()
 	irccon := irc.IRC(config.Nick, config.Nick)
 	irccon.Debug = config.Debug
@@ -61,6 +63,14 @@ func main() {
 	func ( e *irc.Event ){
 		if directexp.MatchString(e.Arguments[1]) {
 			DirectInteraction(irccon, e)
+			return
+		}
+		if episodeurl := iplayerexp.FindString(e.Arguments[1]); episodeurl != ""{
+			get_iplayerCmdGenerator(irccon, episodeurl)
+			return
+		}
+		if youtubeurl := youtubeexp.FindString(e.Arguments[1]); youtubeurl != ""{
+			youtube_dlCmdGenerator(irccon, youtubeurl)
 			return
 		}
 		Interaction(irccon, e)
@@ -143,4 +153,12 @@ func Interaction (irccon *irc.Connection, e * irc.Event){
 		return
 		}
 	}
+}
+
+func get_iplayerCmdGenerator(irccon *irc.Connection, url string){
+	irccon.Privmsg(config.Channel, "get_iplayer --tvmode=best --stream " + url + " | mpv -")
+}
+
+func youtube_dlCmdGenerator(irccon *irc.Connection, url string){
+	irccon.Privmsg(config.Channel, "youtube-dl -f webm " + url)
 }

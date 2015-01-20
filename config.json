@@ -1,5 +1,5 @@
 {
-	"debug": true,
+	"debug": false,
 	"TLS": true,
 	"selfSigned": true,
 	"server": "goodgrammarwhat.com:6667",
@@ -36,6 +36,10 @@
 		{
 			"Exp": ".*encryption.*",
 			"Resp": "Must be a terroist"
+		},
+		{
+			"Exp": ".*((G|g)en(2|too))|((A|a)rch).*",
+			"Resp": "> Install LFS"
 		}
 	]
 }
