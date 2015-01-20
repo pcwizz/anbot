@@ -26,6 +26,16 @@
 		{
 			"Exp": "\\s*hi+\\s*",
 			"Resp": "Hello"
+		},
+		{
+			"Exp": "\\s*what\\s*",
+			"Resp": "http://github.com/pcwizz/anbot"
+		}
+	],
+	"interactions":[
+		{
+			"Exp": ".*encryption.*",
+			"Resp": "Must be a terroist"
 		}
 	]
 }

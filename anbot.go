@@ -14,6 +14,7 @@ import (
 var config Config
 
 var CompiledDirectInteractions map[string]*regexp.Regexp
+var CompiledInteractions map[string]*regexp.Regexp
 
 const license = "This program is free software: you can redistribute it and/or modify " +
     "it under the terms of the GNU General Public License as published by "+
@@ -25,9 +26,12 @@ const license = "This program is free software: you can redistribute it and/or m
     "GNU General Public License for more details. "+
     "You should have received a copy of the GNU General Public License "+
     "along with this program.  If not, see <http://www.gnu.org/licenses/>. "
+
 const licenceexp = `\s*licen[c|s]e\s*`
+
 func main() {
 	CompiledDirectInteractions = make(map[string]*regexp.Regexp)
+	CompiledInteractions = make(map[string]*regexp.Regexp)
 	directexp := regexp.MustCompile(config.Nick + ":.*")
 	//built in interactions
 	CompiledDirectInteractions[licenceexp] = regexp.MustCompile(licenceexp)
@@ -55,6 +59,7 @@ func main() {
 			DirectInteraction(irccon, e)
 			return
 		}
+		Interaction(irccon, e)
 	})
 	irccon.Loop()
 }
@@ -75,6 +80,7 @@ type Config struct{
 	Server, Nick, Channel string
 	TimeAlerts []timeAlert
 	DirectInteractions []interaction
+	Interactions []interaction
 }
 
 func loadConfig(){
@@ -91,6 +97,9 @@ func loadConfig(){
 func CompileInteractions(){
 	for _, interaction := range config.DirectInteractions{
 		CompiledDirectInteractions[interaction.Exp] = regexp.MustCompile(interaction.Exp)
+	}
+	for _, interaction := range config.Interactions{
+		CompiledInteractions[interaction.Exp] = regexp.MustCompile(interaction.Exp)
 	}
 }
 
@@ -117,6 +126,15 @@ func DirectInteraction (irccon *irc.Connection, e *irc.Event){
 
 	for _, interaction := range config.DirectInteractions {
 		if CompiledDirectInteractions[interaction.Exp].MatchString(parts[1]){
+			irccon.Privmsg(e.Arguments[0], interaction.Resp)
+		return
+		}
+	}
+}
+
+func Interaction (irccon *irc.Connection, e * irc.Event){
+	for _, interaction := range config.Interactions {
+		if CompiledInteractions[interaction.Exp].MatchString(e.Arguments[1]){
 			irccon.Privmsg(e.Arguments[0], interaction.Resp)
 		return
 		}
