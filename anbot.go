@@ -164,5 +164,5 @@ func get_iplayerCmdGenerator(irccon *irc.Connection, url string){
 }
 
 func youtube_dlCmdGenerator(irccon *irc.Connection, url string){
-	irccon.Privmsg(config.Channel, "youtube-dl -f webm " + url)
+	irccon.Privmsg(config.Channel, "youtube-dl -f webm '" + url + "'")
 }
