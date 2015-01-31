@@ -41,7 +41,7 @@ func main() {
 	//built in interactions
 	CompiledDirectInteractions[licenceexp] = regexp.MustCompile(licenceexp)
 	iplayerexp := regexp.MustCompile(`bbc\.co\.uk/iplayer/episode/\w+/(\w|-)+`)
-	youtubeexp := regexp.MustCompile(`((youtube\..*/watch\?v=)|(youtu\.be/))(\w|-)+`)
+	youtubeexp := regexp.MustCompile(`((youtube\..*/watch\?)|(youtu\.be/))(\w|-|=|&)+`)
 	CompileInteractions()
 	irccon := irc.IRC(config.Nick, config.Nick)
 	irccon.Debug = config.Debug
