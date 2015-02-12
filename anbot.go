@@ -421,6 +421,6 @@ func CurrencyExchangeHandler(irccon *irc.Connection, value string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := fmt.Sprintf("$ %.2f\t|\t£ %.2f\t|\t€ %.2f\t|\tFS %.2f\t|\tBTC %e", USD, GBP, EUR, CHF, BTC)
+	s := fmt.Sprintf("$ %.2f\t|\t£ %.2f\t|\t€ %.2f\t|\tFS %.2f\t|\tBTC %E", USD, GBP, EUR, CHF, BTC)
 	irccon.Privmsg(config.Channel, s)
 }
