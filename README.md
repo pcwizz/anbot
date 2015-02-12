@@ -14,6 +14,7 @@ Anbot is an ircbot with both useful and playful features.
 	- USD
 	- EUR
 	- CHF
+	- BTC
 - Configurable
 	- Simple json file
 

@@ -32,7 +32,6 @@ const license = "This program is free software: you can redistribute it and/or m
 	"along with this program.  If not, see <http://www.gnu.org/licenses/>. "
 
 const licenceexp = `\s*licen[c|s]e\s*`
-const currency_api_key = `a6cbc141d7f640a4c379c97a86f4ec4deebf83a3`
 
 type rate_obj struct {
 	Rate   float64
@@ -40,7 +39,7 @@ type rate_obj struct {
 } //Relative to GBP; against real money
 var CurrencyRates map[string]rate_obj
 
-const currencyexp = `(\$|£|€|(Fr\.)|(SFr\.)|(FS)) ?(((\d{1,3}[, ])(\d{3}[, ])*\d{3})|\d+)( ?[.,] ?(\d{1,2}))?`
+const currencyexp = `(\$|£|€|(Fr\.)|(SFr\.)|(FS)|(BTC)) ?(((\d{1,3}[, ])(\d{3}[, ])*\d{3})|\d+)( ?[.,] ?(\d{1,2}))?`
 const floatexp = `^(\+|-)?(((\d{1,3}[, ])(\d{3}[ ,])*\d{3})|\d+)( ?([\.,]) ?(\d{3}[, ])*\d+)?$`
 
 var CompiledRegex map[string]*regexp.Regexp
@@ -110,6 +109,7 @@ type interaction struct {
 }
 
 type Config struct {
+	CurrencyApiKey        string
 	Debug                 bool
 	TLS                   bool `json:TLS`
 	SelfSigned            bool
@@ -192,7 +192,7 @@ func updateExchangeRate(code string) error {
 	var rate float64
 	switch code {
 	case "USD", "EUR", "CHF":
-		resp, err := http.Get("http://currency-api.appspot.com/api/GBP/" + code + ".json?key=" + currency_api_key)
+		resp, err := http.Get("http://currency-api.appspot.com/api/GBP/" + code + ".json?key=" + config.CurrencyApiKey)
 		if err != nil {
 			return err
 		}
@@ -217,6 +217,26 @@ func updateExchangeRate(code string) error {
 			return err
 		}
 		rate = data.Rate
+		break
+	case "BTC":
+		resp, err := http.Get("https://bitpay.com/api/rates/GBP")
+		if err != nil {
+			return err
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		var data struct {
+			Code string
+			Name string
+			Rate float64
+		}
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			return err
+		}
+		rate = 1 / data.Rate //Bit pay gives us GBP/BTC we want BTC/GBP
 		break
 	default:
 		err := errors.New("Unsupported currency code")
@@ -369,6 +389,9 @@ func CurrencyExchangeHandler(irccon *irc.Connection, value string) {
 	case strings.HasPrefix(value, "FS"):
 		code = "CHF"
 		value = strings.TrimPrefix(value, "FS")
+	case strings.HasPrefix(value, "BTC"):
+		code = "BTC"
+		value = strings.TrimPrefix(value, "BTC")
 	}
 	if code == "" {
 		log.Fatal(errors.New("Currency not recognised"))
@@ -394,6 +417,10 @@ func CurrencyExchangeHandler(irccon *irc.Connection, value string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := fmt.Sprintf("$ %.2f\t|\t£ %.2f\t|\t€ %.2f\t|\t FS %.2f", USD, GBP, EUR, CHF)
+	BTC, err := ConvertCurrency(code, "BTC", value_flt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := fmt.Sprintf("$ %.2f\t|\t£ %.2f\t|\t€ %.2f\t|\tFS %.2f\t|\tBTC %e", USD, GBP, EUR, CHF, BTC)
 	irccon.Privmsg(config.Channel, s)
 }

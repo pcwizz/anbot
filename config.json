@@ -1,10 +1,11 @@
 {
+	"currencyApiKey": "",
 	"debug": false,
 	"TLS": true,
 	"selfSigned": true,
 	"server": "goodgrammarwhat.com:6667",
 	"nick": "anbot",
-	"channel": "#theParty",
+	"channel": "#metaisland",
 	"timeAlerts": [
 		{
 			"msg": "Wake up hackers!",
