@@ -92,7 +92,11 @@ func main() {
 				return
 			}
 			if value_str := CompiledRegex[currencyexp].FindString(e.Arguments[1]); value_str != "" {
-				CurrencyExchangeHandler(irccon, value_str)
+				if e.Arguments[0] == config.Channel {
+					CurrencyExchangeHandler(irccon, value_str, config.Channel)
+				} else {
+					CurrencyExchangeHandler(irccon, value_str, e.Nick)
+				}
 			}
 			Interaction(irccon, e)
 		})
@@ -367,7 +371,7 @@ func str_to_flt(s string) (f float64, err error) {
 	return
 }
 
-func CurrencyExchangeHandler(irccon *irc.Connection, value string) {
+func CurrencyExchangeHandler(irccon *irc.Connection, value, nick string) {
 	var code string
 	//Work out currency
 	switch {
@@ -422,5 +426,5 @@ func CurrencyExchangeHandler(irccon *irc.Connection, value string) {
 		log.Fatal(err)
 	}
 	s := fmt.Sprintf("$ %.2f\t|\t£ %.2f\t|\t€ %.2f\t|\tFS %.2f\t|\tBTC %E", USD, GBP, EUR, CHF, BTC)
-	irccon.Privmsg(config.Channel, s)
+	irccon.Privmsg(nick, s)
 }
