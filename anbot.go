@@ -91,11 +91,13 @@ func main() {
 				youtube_dlCmdGenerator(irccon, youtubeurl)
 				return
 			}
-			if value_str := CompiledRegex[currencyexp].FindString(e.Arguments[1]); value_str != "" {
-				if e.Arguments[0] == config.Channel {
-					CurrencyExchangeHandler(irccon, value_str, config.Channel)
-				} else {
-					CurrencyExchangeHandler(irccon, value_str, e.Nick)
+			for _, value_str := range CompiledRegex[currencyexp].FindAllString(e.Arguments[1], -1) {
+				if value_str != "" {
+					if e.Arguments[0] == config.Channel {
+						CurrencyExchangeHandler(irccon, value_str, config.Channel)
+					} else {
+						CurrencyExchangeHandler(irccon, value_str, e.Nick)
+					}
 				}
 			}
 			Interaction(irccon, e)
